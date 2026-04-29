@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitFrame AutoSender 1.1.1.1</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
+    <style>
+        body { background: #121b22; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        .container { background: #1f2c33; padding: 30px; border-radius: 20px; width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: #00a884; margin-bottom: 20px; }
+        label { font-size: 14px; color: #8696a0; margin-top: 10px; display: block; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0 15px 0; border-radius: 10px; border: 1px solid #3b4a54; background: #2a3942; color: white; box-sizing: border-box; outline: none; font-size: 16px; }
+        button { width: 100%; padding: 15px; background: #00a884; border: none; color: white; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        button:hover { background: #06cf9c; }
+        button:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>AutoSender 🚀</h2>
+        
+        <label>Номер получателя</label>
+        <input type="text" id="phone" placeholder="79991234567">
+        
+        <label>Время отправки</label>
+        <input type="time" id="time">
+        
+        <label>Текст сообщения</label>
+        <textarea id="msg" rows="4" placeholder="Введите текст..."></textarea>
+        
+        <button onclick="saveToCloud()">Запланировать</button>
+    </div>
+
+<script>
+    // ТВОЙ КОНФИГ (проверь, чтобы ссылка databaseURL была правильной!)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDKX97rdGUhxrhRzsZDkRt692dORSadIlY",
+        authDomain: "bitframe-autosender.firebaseapp.com",
+        databaseURL: "https://bitframe-autosender-default-rtdb.firebaseio.com", 
+        projectId: "bitframe-autosender",
+        storageBucket: "bitframe-autosender.firebasestorage.app",
+        messagingSenderId: "93345533631",
+        appId: "1:93345533631:web:67ab557bcfad7163fcc00a"
+    };
+
+    // Инициализация
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function saveToCloud() {
+        const phone = document.getElementById('phone').value.trim();
+        const time = document.getElementById('time').value;
+        const msg = document.getElementById('msg').value.trim();
+
+        if (phone && time && msg) {
+            // Сохраняем в папку 'scheduled_messages'
+            db.ref('scheduled_messages').push({
+                phone: phone,
+                time: time,
+                message: msg,
+                status: "pending" // Важно: ставим статус "ожидание"
+            }).then(() => {
+                alert("✅ Отправлено в облако! Сервер увидит это в " + time);
+                document.getElementById('msg').value = ""; // Очистка
+            }).catch(err => {
+                alert("Ошибка: " + err.message);
+            });
+        } else {
+            alert("⚠️ Заполни все поля!");
+        }
+    }
+</script>
+</body>
+</html>
