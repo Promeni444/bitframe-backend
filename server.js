@@ -9,19 +9,21 @@ admin.initializeApp({
 });
 const db = admin.database();
 
+const puppeteer = require('puppeteer'); // Убедись, что эта строка есть в самом верху файла
+
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-    
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
+        // Эта команда автоматически найдет путь к установленному Chrome
+        executablePath: puppeteer.executablePath(), 
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage'
+            '--disable-dev-shm-usage',
+            '--disable-gpu'
         ],
     }
-
 });
 
 client.on('qr', (qr) => {
