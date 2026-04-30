@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitFrame Premium | Admin</title>
-    <!-- Google Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <!-- Firebase SDK -->
+    <title>BitFrame | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -24,115 +21,102 @@
             color: white;
             margin: 0;
             padding: 20px;
-            min-height: 100vh;
+            display: flex;
+            justify-content: center;
         }
 
-        .container { max-width: 600px; margin: 0 auto; }
+        .container { width: 100%; max-width: 500px; }
 
         .premium-card {
             background: var(--glass);
             backdrop-filter: blur(15px);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        h2, h3 { margin-top: 0; color: var(--accent); }
+        h2, h3 { margin-top: 0; color: var(--accent); text-align: center; }
 
-        /* Форма ввода */
-        .input-group { display: flex; flex-direction: column; gap: 10px; }
+        .input-group { display: flex; flex-direction: column; gap: 15px; }
+        
+        label { font-size: 0.9rem; color: #ccc; margin-bottom: -10px; }
+
         input, textarea {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 14px;
             color: white;
             outline: none;
+            font-size: 1rem;
         }
 
         .btn-main {
             background: linear-gradient(to right, #00d2ff, #3a7bd5);
             border: none;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 12px;
             color: white;
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
+            margin-top: 10px;
         }
 
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); }
 
-        /* Списки сообщений */
         .message-item {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 15px;
             padding: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .msg-info b { color: var(--accent); display: block; }
+        .msg-info b { color: var(--accent); display: block; font-size: 0.9rem; }
+        .msg-info span { font-size: 0.95rem; opacity: 0.9; }
         
         .btn-del {
-            background: rgba(255, 75, 43, 0.2);
+            background: rgba(255, 75, 43, 0.15);
             border: 1px solid #ff4b2b;
             color: #ff4b2b;
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 0.8rem;
         }
-
-        .badge-sent { color: #00ff88; font-weight: 600; font-size: 0.8rem; }
-
-        /* To-Do Секция */
-        .todo-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .history-section { opacity: 0.7; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="premium-card">
-        <h2><i class="fas fa-paper-plane"></i> Новое упоминание</h2>
+        <h2>BitFrame Bot</h2>
         <div class="input-group">
-            <input type="text" id="phone" placeholder="Номер (992XXXXXXXXX)">
+            <label>Номер получателя</label>
+            <input type="text" id="phone" placeholder="992XXXXXXXXX">
+            
+            <label>Дата отправки</label>
+            <input type="date" id="date">
+            
+            <label>Время отправки</label>
             <input type="time" id="time">
-            <textarea id="message" placeholder="Текст сообщения..." rows="3"></textarea>
+            
+            <label>Сообщение</label>
+            <textarea id="message" placeholder="Введите текст..." rows="3"></textarea>
+            
             <button class="btn-main" onclick="sendToFirebase()">Запланировать</button>
         </div>
     </div>
 
-    <!-- В ПЛАНАХ -->
     <div class="premium-card">
-        <h3><i class="fas fa-clock"></i> В планах</h3>
+        <h3><i class="fas fa-clock"></i> Активные задачи</h3>
         <div id="pending-list"></div>
-    </div>
-
-    <!-- TO-DO СПИСОК -->
-    <div class="premium-card">
-        <h3><i class="fas fa-check-double"></i> Список дел</h3>
-        <div class="input-group" style="flex-direction: row;">
-            <input type="text" id="todo-input" style="flex:1" placeholder="Купить хлеб...">
-            <button class="btn-main" onclick="addTodo()">+</button>
-        </div>
-        <div id="todo-list"></div>
-    </div>
-
-    <!-- ИСТОРИЯ -->
-    <div class="premium-card history-section">
-        <h3><i class="fas fa-history"></i> История</h3>
-        <div id="history-list"></div>
     </div>
 </div>
 
@@ -144,76 +128,52 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 1. Отправка сообщения в базу
+    // Установка сегодняшней даты по умолчанию
+    document.getElementById('date').valueAsDate = new Date();
+
     function sendToFirebase() {
         const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
         const time = document.getElementById('time').value;
         const message = document.getElementById('message').value;
 
-        if(!phone || !time || !message) return alert("Заполни все поля!");
+        if(!phone || !date || !time || !message) return alert("Заполни все поля!");
 
         db.ref('scheduled_messages').push({
             phone: phone,
+            date: date, // Сохраняем дату
             time: time,
             message: message,
             status: 'pending'
         });
-        alert("Запланировано!");
+        alert("Добавлено в список!");
+        document.getElementById('message').value = '';
     }
 
-    // 2. Удаление сообщения
     function deleteMsg(id) {
-        if(confirm("Удалить задачу?")) {
+        if(confirm("Удалить это упоминание?")) {
             db.ref('scheduled_messages/' + id).remove();
         }
     }
 
-    // 3. Логика To-Do
-    function addTodo() {
-        const text = document.getElementById('todo-input').value;
-        if(text) db.ref('todos').push({ text: text });
-        document.getElementById('todo-input').value = '';
-    }
-
-    function deleteTodo(id) {
-        db.ref('todos/' + id).remove();
-    }
-
-    // 4. Слушатель данных (Обновление интерфейса)
     db.ref('scheduled_messages').on('value', (snapshot) => {
         const data = snapshot.val();
         const pList = document.getElementById('pending-list');
-        const hList = document.getElementById('history-list');
-        pList.innerHTML = ''; hList.innerHTML = '';
+        pList.innerHTML = '';
 
         for (let id in data) {
             const m = data[id];
-            const card = `
-                <div class="message-item">
-                    <div class="msg-info">
-                        <b>${m.time} | ${m.phone}</b>
-                        <span>${m.message}</span>
-                    </div>
-                    ${m.status === 'pending' ? 
-                        `<button class="btn-del" onclick="deleteMsg('${id}')">Удалить</button>` : 
-                        `<span class="badge-sent">✓ Отправлено</span>`}
-                </div>`;
-            
-            if(m.status === 'pending') pList.innerHTML += card;
-            else hList.innerHTML += card;
-        }
-    });
-
-    db.ref('todos').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const tList = document.getElementById('todo-list');
-        tList.innerHTML = '';
-        for (let id in data) {
-            tList.innerHTML += `
-                <div class="todo-item">
-                    <span>${data[id].text}</span>
-                    <i class="fas fa-trash" style="color:#ff4b2b; cursor:pointer" onclick="deleteTodo('${id}')"></i>
-                </div>`;
+            if(m.status === 'pending') {
+                pList.innerHTML += `
+                    <div class="message-item">
+                        <div class="msg-info">
+                            <b>${m.date} в ${m.time}</b>
+                            <b>К номеру: ${m.phone}</b>
+                            <span>${m.message}</span>
+                        </div>
+                        <button class="btn-del" onclick="deleteMsg('${id}')">Удалить</button>
+                    </div>`;
+            }
         }
     });
 </script>
