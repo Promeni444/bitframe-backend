@@ -15,13 +15,12 @@ const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-        // Эта команда автоматически найдет путь к установленному Chrome
-        executablePath: puppeteer.executablePath(), 
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null, // Koyeb сам подставит путь
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
-            '--disable-gpu'
+            '--blink-settings=imagesEnabled=false' // Экономим RAM
         ],
     }
 });
